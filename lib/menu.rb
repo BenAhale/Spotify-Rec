@@ -3,7 +3,7 @@ module Menu
   def display_menu
     system("clear")
     prompt = TTY::Prompt.new
-    return prompt.select("    MENU", (["My List", "Generate Suggestions", "Edit Account Details", "Exit"]))
+    return prompt.select("    MENU", (["My List", "Generate Suggestions", "Playlist", "Edit Account Details", "Exit"]))
   end
 
   def my_list
@@ -30,6 +30,8 @@ module Menu
         my_list
       when "Generate Suggestions"
         Rec::amount_of_suggestions
+      when "Playlist"
+        UserPlaylist::menu
       when "Edit Account Details"
         puts "Account Details Selected"
       when "Exit"

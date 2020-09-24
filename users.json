@@ -4,7 +4,11 @@
     "username": "benahale",
     "password": "Tsurani7",
     "playlist": [
-
+      {
+        "name": "Too Good",
+        "id": "3BtuIIrQlkujKPuWF2B85z",
+        "artist": "Drake"
+      }
     ],
     "mylist": [
       {
@@ -12,6 +16,21 @@
         "artist": "Dermot Kennedy",
         "id": "0l4AReW2LuX0yStPfgQgSR",
         "type": "track"
+      },
+      {
+        "name": "MIDDLE CHILD",
+        "artist": "J. Cole",
+        "id": "2JvzF1RMd7lE3KmFlsyZD8",
+        "type": "track"
+      },
+      {
+        "name": "Drake",
+        "id": "3TVXtAsR1Inumwj472S9r4",
+        "type": "artist"
+      },
+      {
+        "name": "Pop",
+        "type": "genre"
       }
     ]
   }

@@ -53,6 +53,7 @@ module Login
     username = prompt.ask("Username >") { |u| u.validate(/\A[0-9a-zA-Z'-]*\z/, "Username must only contain letters and numbers")}
     password = prompt.mask("Password >")
     $user = User.new(username, password, gen_uid)
+    $user_playlist = Playlist.new($user.playlist)
     store_user
   end
 
@@ -73,6 +74,7 @@ module Login
         if hash["password"] == password
           auth = true
           $user = User.new(username, password, hash["id"], hash["playlist"], hash["mylist"])
+          $user_playlist = Playlist.new($user.playlist)
           puts "Success! Logging you in.."
           sleep(1)
           Menu::menu_router
