@@ -29,7 +29,7 @@ module Menu
         system("clear")
         my_list
       when "Generate Suggestions"
-        puts "Generate Suggestions Selected"
+        Rec::amount_of_suggestions
       when "Edit Account Details"
         puts "Account Details Selected"
       when "Exit"

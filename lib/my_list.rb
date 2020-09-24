@@ -26,7 +26,7 @@ module MyList
 
   def empty_list
     puts "Oh no! Your list is currently empty!"
-    puts "Add up to 5 items to your list. An item can be a song, artist, album or genre."
+    puts "Add up to 5 items to your list. An item can be a song, artist or genre."
     separator
     $prompt.keypress("Press any key to return to the previous menu..")
     Menu::my_list
@@ -39,14 +39,12 @@ module MyList
       $prompt.keypress("Press any key to return to the previous menu..")
       Menu::my_list
     end
-    selection = $prompt.select("Which type would you like to add?", (["Song", "Artist", "Album", "Genre", "Back"]))
+    selection = $prompt.select("Which type would you like to add?", (["Song", "Artist", "Genre", "Back"]))
     case selection
       when "Song"
         search_song
       when "Artist"
         search_artist
-      when "Album"
-        search_album
       when "Genre"
         store_genre
       when "Back"
@@ -90,27 +88,27 @@ module MyList
     update_file
   end
 
-  def search_album
-    album_query = $prompt.ask("What is the name of the album?")
-    albums = RSpotify::Album.search(album_query, limit: 5)
-    cleaned_results = []
-    albums.each { |a| cleaned_results << "#{a.name} by #{a.artists[0].name}" }
-    system("clear")
-    selection = $prompt.select("Please select one of the search results:", (cleaned_results)).split(" by ")
-    store_album(selection)
-  end
+  # def search_album
+  #   album_query = $prompt.ask("What is the name of the album?")
+  #   albums = RSpotify::Album.search(album_query, limit: 5)
+  #   cleaned_results = []
+  #   albums.each { |a| cleaned_results << "#{a.name} by #{a.artists[0].name}" }
+  #   system("clear")
+  #   selection = $prompt.select("Please select one of the search results:", (cleaned_results)).split(" by ")
+  #   store_album(selection)
+  # end
 
-  def store_album(details)
-    album = RSpotify::Album.search("#{details[0]} #{details[1]}", limit: 1).first
-    album_details = {
-    "name" => album.name,
-    "artist" => album.artists[0].name,
-    "id" => album.id,
-    "type" => "album"
-    }
-    $user.mylist << album_details
-    update_file
-  end
+  # def store_album(details)
+  #   album = RSpotify::Album.search("#{details[0]} #{details[1]}", limit: 1).first
+  #   album_details = {
+  #   "name" => album.name,
+  #   "artist" => album.artists[0].name,
+  #   "id" => album.id,
+  #   "type" => "album"
+  #   }
+  #   $user.mylist << album_details
+  #   update_file
+  # end
 
   def search_artist
     artist_query = $prompt.ask("What is the name of the artist?")
