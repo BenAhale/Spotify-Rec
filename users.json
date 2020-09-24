@@ -6,8 +6,13 @@
     "playlist": [
 
     ],
-    "topten": [
-
+    "mylist": [
+      {
+        "name": "Giants",
+        "artist": "Dermot Kennedy",
+        "id": "0l4AReW2LuX0yStPfgQgSR",
+        "type": "track"
+      }
     ]
   }
 ]

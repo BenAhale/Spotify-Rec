@@ -3,22 +3,22 @@ module Menu
   def display_menu
     system("clear")
     prompt = TTY::Prompt.new
-    return prompt.select("--==+ MENU +==--", (["My List", "Generate Suggestions", "Edit Account Details"]))
+    return prompt.select("    MENU", (["My List", "Generate Suggestions", "Edit Account Details", "Exit"]))
   end
 
   def my_list
     system("clear")
     prompt = TTY::Prompt.new
-    selection = prompt.select("--==+ TOP TEN +==--", (["Display", "Add", "Remove"]))
+    selection = prompt.select("--==+ My List +==--", (["Display", "Add", "Remove", "Back"]))
     case selection
       when "Display"
-        puts "Your Top Ten:"
         MyList::list
-        back = prompt.keypress("Press <space> or <enter> to return to the previous menu")
-        top_ten
       when "Add"
-        name = prompt.ask("")
+        MyList::add_to_list
       when "Remove"
+        MyList::remove_from_list
+      when "Back"
+        menu_router
     end
   end
 
@@ -27,12 +27,13 @@ module Menu
     case selection
       when "My List"
         system("clear")
-        MyList::list
+        my_list
       when "Generate Suggestions"
         puts "Generate Suggestions Selected"
-
       when "Edit Account Details"
         puts "Account Details Selected"
+      when "Exit"
+        exit
     end
   end
 

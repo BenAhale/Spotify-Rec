@@ -11,8 +11,12 @@ module Login
   end
 
   def initial_login
+    clear
+    puts "---------------------------"
+    puts "Welcome to the Spotify App!"
+    puts "---------------------------"
     prompt = TTY::Prompt.new
-    return prompt.select("=-= Menu =-=", %w(New Returning))
+    return prompt.select("Are you a new or returning user?", %w(New Returning))
   end
 
   def load_data
