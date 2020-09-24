@@ -1,6 +1,10 @@
 module Login
 
-  USERFILE = "../users.json"
+  def userdata
+    path = File.join(File.dirname(File.dirname(File.absolute_path(__FILE__))))
+    userfile = "#{path}/users.json"
+    return userfile
+  end
 
   def clear
     system("clear")
@@ -12,7 +16,7 @@ module Login
   end
 
   def load_data
-    file = File.read(USERFILE)
+    file = File.read(userdata)
     return JSON.parse(file)
   end
 
@@ -27,10 +31,10 @@ module Login
       "username" => $user.username,
       "password" => $user.password,
       "playlist" => $user.playlist,
-      "topten" => $user.topten
+      "mylist" => $user.mylist
     }
     data << user_details
-    File.open(USERFILE,"w") do |f|
+    File.open(userdata,"w") do |f|
       f.puts JSON.pretty_generate(data)
     end
     puts "You're now registered! Logging you in.."
@@ -64,7 +68,7 @@ module Login
       if hash["username"].downcase == username.downcase
         if hash["password"] == password
           auth = true
-          $user = User.new(username, password, hash["id"], hash["playlist"])
+          $user = User.new(username, password, hash["id"], hash["playlist"], hash["mylist"])
           puts "Success! Logging you in.."
           sleep(1)
           Menu::menu_router

@@ -1,14 +1,14 @@
 class User
 
   attr_reader :username, :password, :uid
-  attr_accessor :playlist, :topten
+  attr_accessor :playlist, :mylist
 
-  def initialize(username, password, uid, playlist=[], topten=[])
+  def initialize(username, password, uid, playlist=[], mylist=[])
     @username = username
     @password = password
     @playlist = playlist
     @uid = uid
-    @topten = topten
+    @mylist = mylist
   end
 
 end
