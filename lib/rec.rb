@@ -5,6 +5,9 @@ module Rec
   @genres = []
 
   def sort_my_list
+    @tracks.clear
+    @artists.clear
+    @genres.clear
     list = $user.mylist.clone
     list.each do |item|
       @tracks << item["id"] if item["type"] == "track"
@@ -37,21 +40,26 @@ module Rec
   end
 
   def recommend(num)
+    system("clear")
     prompt = TTY::Prompt.new
     sort_my_list
     recommendations = RSpotify::Recommendations.generate(limit: num, seed_artists: @artists, seed_genres: @genres, seed_tracks: @tracks)
     cleaned_recs = recommendations.tracks.map { |t| "#{t.name} by #{t.artists[0].name}" }
-    selections = prompt.multi_select("Select any number of suggestions to add to your playlist!", cleaned_recs)
+    puts "》  RECOMMENDATIONS  《"
+    puts "Select the recommendations you want to add to your playlist!"
+    selections = prompt.multi_select("Hit enter with none selected to skip.", cleaned_recs)
     clean_recommendations(selections)
   end
 
   def amount_of_suggestions
+    system("clear")
+    puts "》  RECOMMENDATIONS  《"
     prompt = TTY::Prompt.new
-    amount = prompt.ask("How many suggestions would you like to generate?") do |q|
+    amount = prompt.ask("How many recommendations would you like to generate?") do |q|
       q.in '1-10'
       q.messages[:range?] = "Number must be between 1 and 10"
     end
-    recommend(amount)
+    recommend(amount.to_i)
   end
 
 

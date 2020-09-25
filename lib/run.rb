@@ -5,6 +5,7 @@ require_relative 'login'
 require_relative 'rec'
 require 'json'
 require "tty-prompt"
+require 'fog/aws'
 require_relative 'menu'
 require_relative 'my_list'
 include Login

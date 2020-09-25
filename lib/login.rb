@@ -12,9 +12,20 @@ module Login
 
   def initial_login
     clear
-    puts "---------------------------"
-    puts "Welcome to the Spotify App!"
-    puts "---------------------------"
+    puts "               ;;;;;;;;;;;;;;;;;;; 
+               ;;;;;;;;;;;;;;;;;;;
+               ;                 ;
+               ;                 ;
+               ;                 ;
+               ;                 ;
+               ;                 ;
+               ;                 ;
+           ,;;;;;            ,;;;;;
+           ;;;;;;            ;;;;;;
+           `;;;;'            `;;;;'
+           "
+    puts "》  Welcome to the Spotify Recommendations App!  《
+    "
     prompt = TTY::Prompt.new
     return prompt.select("Are you a new or returning user?", %w(New Returning))
   end

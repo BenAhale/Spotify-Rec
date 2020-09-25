@@ -74,19 +74,44 @@ module UserPlaylist
     menu
   end
 
-  def menu
+  def export_to_file
+    path = File.join(File.dirname(File.dirname(File.absolute_path(__FILE__))))
+    playlist_file = "#{path}/playlist.md"
+    File.open(playlist_file,"w") do |f|
+      f.puts("# #{$user.username}'s Playlist")
+      $user_playlist.tracks.each { |track| f.puts("1. #{track["name"]} by #{track["artist"]} || [Listen on Spotify](https://open.spotify.com/track/#{track["id"]})") }
+    end
+    system("cp #{playlist_file} ~/Desktop/playlist.md")
+    puts "Exported playlist to your Desktop!"
+    sleep(2)
+    system("clear")
+  end
+
+  def keypress_playlist
     prompt = TTY::Prompt.new
-    selection = prompt.select("What would you like to do?", (%w[Display Add Remove Back]))
+    prompt.keypress("Press any key to return to the previous menu..")
+  end
+
+  def menu
+    system("clear")
+    prompt = TTY::Prompt.new
+    selection = prompt.select("》  PLAYLIST  《", (["Display", "Add", "Remove", "Export To File", "Back"]))
     case selection
       when "Display"
+        puts "》 PLAYLIST"
         $user_playlist.list
-        sleep(3)
+        keypress_playlist
         menu
       when "Add"
         add
+        keypress_playlist
         menu
       when "Remove"
         remove
+        menu
+      when "Export To File"
+        export_to_file
+        keypress_playlist
         menu
       when "Back"
         Menu::menu_router

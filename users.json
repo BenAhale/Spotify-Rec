@@ -8,6 +8,31 @@
         "name": "Too Good",
         "id": "3BtuIIrQlkujKPuWF2B85z",
         "artist": "Drake"
+      },
+      {
+        "name": "Giants",
+        "id": "0l4AReW2LuX0yStPfgQgSR",
+        "artist": "Dermot Kennedy"
+      },
+      {
+        "name": "Without Fear",
+        "id": "3Doq8xlDwB0x4UpGrxrvos",
+        "artist": "Dermot Kennedy"
+      },
+      {
+        "name": "Jungle",
+        "id": "7JXZq0JgG2zTrSOAgY8VMC",
+        "artist": "Drake"
+      },
+      {
+        "name": "Forever",
+        "id": "6HSqyfGnsHYw9MmIpa9zlZ",
+        "artist": "Drake"
+      },
+      {
+        "name": "Headlines",
+        "id": "6LxSe8YmdPxy095Ux6znaQ",
+        "artist": "Drake"
       }
     ],
     "mylist": [
@@ -32,6 +57,37 @@
         "name": "Pop",
         "type": "genre"
       }
+    ]
+  },
+  {
+    "id": "2",
+    "username": "ben",
+    "password": "password",
+    "playlist": [
+
+    ],
+    "mylist": [
+
+    ]
+  },
+  {
+    "id": "3",
+    "username": "benahale",
+    "password": "password",
+    "playlist": [
+      {
+        "name": "Taste (feat. Offset)",
+        "id": "5IaHrVsrferBYDm0bDyABy",
+        "artist": "Tyga"
+      },
+      {
+        "name": "Envy Me",
+        "id": "7rvyVWja33WG9R97oeJAjx",
+        "artist": "Calboy"
+      }
+    ],
+    "mylist": [
+
     ]
   }
 ]
