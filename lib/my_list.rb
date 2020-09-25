@@ -88,28 +88,6 @@ module MyList
     update_file
   end
 
-  # def search_album
-  #   album_query = $prompt.ask("What is the name of the album?")
-  #   albums = RSpotify::Album.search(album_query, limit: 5)
-  #   cleaned_results = []
-  #   albums.each { |a| cleaned_results << "#{a.name} by #{a.artists[0].name}" }
-  #   system("clear")
-  #   selection = $prompt.select("Please select one of the search results:", (cleaned_results)).split(" by ")
-  #   store_album(selection)
-  # end
-
-  # def store_album(details)
-  #   album = RSpotify::Album.search("#{details[0]} #{details[1]}", limit: 1).first
-  #   album_details = {
-  #   "name" => album.name,
-  #   "artist" => album.artists[0].name,
-  #   "id" => album.id,
-  #   "type" => "album"
-  #   }
-  #   $user.mylist << album_details
-  #   update_file
-  # end
-
   def search_artist
     artist_query = $prompt.ask("What is the name of the artist?")
     artists = RSpotify::Artist.search(artist_query, limit: 5)
