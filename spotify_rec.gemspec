@@ -15,4 +15,5 @@ Gem::Specification.new do |s|
     ]
     s.require_paths = ["lib", "public"]
     s.authors  = ["Ben Ahale"]
+    s.executables << 'spotify_rec'
   end
