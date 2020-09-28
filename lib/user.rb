@@ -14,7 +14,7 @@ class User
   def details
     puts "Username: #{@username.colorize(:light_green)}"
     puts "Password: #{@password.colorize(:light_green)}"
-    puts "User ID: #{@uid.colorize(:light_green)}"
+    puts "User ID: #{@uid.to_s.colorize(:light_green)}"
     $prompt.keypress("Press any key to continue..")
     menu = Menu.new(Login::user)
     menu.account_details
