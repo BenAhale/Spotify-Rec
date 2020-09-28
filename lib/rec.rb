@@ -3,12 +3,15 @@ class Rec
   def initialize(user)
     @user_list = user.mylist
     @user = user
-  end
-
-  def sort_my_list
     @tracks = []
     @artists = []
     @genres = []
+  end
+
+  def sort_my_list
+    @tracks.clear
+    @artists.clear
+    @genres.clear
     @user_list.each do |item|
       @tracks << item["id"] if item["type"] == "track"
       @artists << item["id"] if item["type"] == "artist"
@@ -53,6 +56,12 @@ class Rec
 
   def amount_of_suggestions
     system("clear")
+    if @user_list.length <= 0
+      puts "Uh oh! You don't have any items in your list yet, so we can't generate any recommendations. Please add some before doing this!".colorize(:light_red)
+      $prompt.keypress("Press any key to return to the previous menu..")
+      menu = Menu.new(@user)
+      menu.display_menu
+    end
     puts "》  RECOMMENDATIONS  《"
     amount = $prompt.ask("How many recommendations would you like to generate?".colorize(:light_green)) do |q|
       q.in '1-10'
