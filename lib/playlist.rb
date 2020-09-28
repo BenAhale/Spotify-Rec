@@ -2,33 +2,25 @@ class Playlist
 
   attr_reader :tracks
 
-  def initialize(tracks)
-    @tracks = tracks
-  end
-
-  def add_track(track)
-    @tracks << track
-  end
-
-  def add_multiple_tracks(tracks)
-    tracks.each { |track| @tracks << track }
+  def initialize(user)
+    @playlist = user.playlist
+    @user = user
   end
 
   def list
-    @tracks.each { |track| puts "#{track["name"]} by #{track["artist"]}" }
+    rows = @playlist.map { |track| [track["name"], track["artist"]] }
+    table = Terminal::Table.new :headings => ['Track', 'Artist'], :rows => rows
+    puts table
   end
-end
-
-module UserPlaylist
 
   def remove
-    empty if $user.playlist.length <= 0
-    item_names = $user.playlist.map { |item| "#{item["name"]} by #{item["artist"]}" }
+    empty if @playlist.length <= 0
+    item_names = @playlist.map { |item| "#{item["name"]} by #{item["artist"]}" }
     item_names << "Back"
     selection = $prompt.select("Which track would you like to remove?", (item_names)).split(" by ")
     menu if selection == "Back"
-    $user.playlist.each_with_index do |item, index|
-      $user.playlist.delete_at(index) if item["name"] == selection[0]
+    @playlist.each_with_index do |item, index|
+      @user.playlist.delete_at(index) if item["name"] == selection[0]
     end
     update_playlist
   end
@@ -60,12 +52,12 @@ module UserPlaylist
     "id" => track.id,
     "artist" => track.artists[0].name
     }
-    $user.playlist << song_details
+    @playlist << song_details
     update_playlist
   end
 
   def update_playlist
-    updated_data = Login.load_data.each { |user| user["playlist"] = $user.playlist if user["id"] == $user.uid.to_s }
+    updated_data = Login.load_data.each { |user| user["playlist"] = @playlist if user["id"] == @user.uid.to_s }
     File.open((Login::userdata),"w") do |f|
       f.puts JSON.pretty_generate(updated_data)
     end
@@ -78,8 +70,8 @@ module UserPlaylist
     path = File.join(File.dirname(File.dirname(File.absolute_path(__FILE__))))
     playlist_file = "#{path}/playlist.md"
     File.open(playlist_file,"w") do |f|
-      f.puts("# #{$user.username}'s Playlist")
-      $user_playlist.tracks.each { |track| f.puts("1. #{track["name"]} by #{track["artist"]} || [Listen on Spotify](https://open.spotify.com/track/#{track["id"]})") }
+      f.puts("# #{@user.username}'s Playlist")
+      @playlist.each { |track| f.puts("1. #{track["name"]} by #{track["artist"]} || [Listen on Spotify](https://open.spotify.com/track/#{track["id"]})") }
     end
     system("cp #{playlist_file} ~/Desktop/playlist.md")
     puts "Exported playlist to your Desktop!"
@@ -88,18 +80,16 @@ module UserPlaylist
   end
 
   def keypress_playlist
-    prompt = TTY::Prompt.new
-    prompt.keypress("Press any key to return to the previous menu..")
+    $prompt.keypress("Press any key to return to the previous menu..")
   end
 
   def menu
     system("clear")
-    prompt = TTY::Prompt.new
-    selection = prompt.select("》  PLAYLIST  《", (["Display", "Add", "Remove", "Export To File", "Back"]))
+    selection = $prompt.select("》  PLAYLIST  《", (["Display", "Add", "Remove", "Export To File", "Back"]))
     case selection
       when "Display"
-        puts "》 PLAYLIST"
-        $user_playlist.list
+        puts "》  PLAYLIST  《"
+        list
         keypress_playlist
         menu
       when "Add"
@@ -114,7 +104,8 @@ module UserPlaylist
         keypress_playlist
         menu
       when "Back"
-        Menu::menu_router
+        @menu = Menu.new(@user)
+        @menu.menu_router
     end
   end
 

@@ -12,53 +12,55 @@ class User
   end
 
   def details
-    puts "Username: #{@username}"
-    puts "Password: #{@password}"
-    puts "User ID: #{@uid}"
+    puts "Username: #{@username.colorize(:light_green)}"
+    puts "Password: #{@password.colorize(:light_green)}"
+    puts "User ID: #{@uid.colorize(:light_green)}"
     $prompt.keypress("Press any key to continue..")
-    Menu::account_details
+    menu = Menu.new(Login::user)
+    menu.account_details
   end
 
   def change_username(new_name)
-    updated_data = Login.load_data.each { |user| user["username"] = new_name if user["id"] == $user.uid.to_s }
+    updated_data = Login.load_data.each { |user| user["username"] = new_name if user["id"] == Login::user.uid.to_s }
     File.open((Login::userdata),"w") do |f|
       f.puts JSON.pretty_generate(updated_data)
     end
     @username = new_name
-    puts "Success! Your new username is #{$user.username}"
+    puts "Success! Your new username is #{Login::user.username}".colorize(:light_green)
     $prompt.keypress("Press any key to continue..")
-    Menu::account_details
+    menu = Menu.new(Login::user)
+    menu.account_details
   end
 
   def change_password(new_password)
-    updated_data = Login.load_data.each { |user| user["password"] = new_password if user["id"] == $user.uid.to_s }
+    updated_data = Login.load_data.each { |user| user["password"] = new_password if user["id"] == Login::user.uid.to_s }
     File.open((Login::userdata),"w") do |f|
       f.puts JSON.pretty_generate(updated_data)
     end
     @password = new_password
-    puts "Success! Your password has been changed."
+    puts "Success! Your password has been changed.".colorize(:light_green)
     $prompt.keypress("Press any key to continue..")
-    Menu::account_details
+    menu = Menu.new(Login::user)
+    menu.account_details
   end
 
   def delete_from_file
     updated_data = []
-    Login.load_data.each { |user| updated_data << user unless user["id"] == $user.uid.to_s }
+    Login.load_data.each { |user| updated_data << user unless user["id"] == Login::user.uid.to_s }
     File.open((Login::userdata),"w") do |f|
       f.puts JSON.pretty_generate(updated_data)
     end
-    puts "Your account has been deleted. The program will now exit."
+    puts "Your account has been deleted. The program will now exit.".colorize(:light_red)
     $prompt.keypress("Press any key to continue..")
     exit
   end
   
 
   def delete_account
-    prompt = TTY::Prompt.new
-    puts "Woah there! Deleting your account is serious business, and cannot be undone."
-    selection = prompt.yes?("Are you sure you want to delete your account?")
+    puts "Woah there! Deleting your account is serious business, and cannot be undone.".colorize(:light_red)
+    selection = $prompt.yes?("Are you sure you want to delete your account?").colorize(:light_red)
     unless selection
-      Menu::menu_router
+      menu = Menu.new(Login::user)
     else
       delete_from_file
     end

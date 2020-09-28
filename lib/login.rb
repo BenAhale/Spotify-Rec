@@ -1,8 +1,14 @@
+require_relative 'menu'
+
 module Login
+
+  def user
+    return @user
+  end
 
   def userdata
     path = File.join(File.dirname(File.dirname(File.absolute_path(__FILE__))))
-    userfile = "#{path}/users.json"
+    userfile = "#{path}/public/users.json"
     return userfile
   end
 
@@ -23,11 +29,10 @@ module Login
            ,;;;;;            ,;;;;;
            ;;;;;;            ;;;;;;
            `;;;;'            `;;;;'
-           "
-    puts "》  Welcome to the Spotify Recommendations App!  《
-    "
-    prompt = TTY::Prompt.new
-    return prompt.select("Are you a new or returning user?", %w(New Returning))
+           ".colorize(:light_green)
+    puts "》  Welcome to the Spotify Recommendations App!  《".colorize(:light_green)
+    puts
+    return $prompt.select("Are you a new or returning user? \n", %w(New Returning))
   end
 
   def load_data
@@ -42,38 +47,37 @@ module Login
   def store_user
     data = load_data
     user_details = {
-      "id" => "#{$user.uid}",
-      "username" => $user.username,
-      "password" => $user.password,
-      "playlist" => $user.playlist,
-      "mylist" => $user.mylist
+      "id" => "#{@user.uid}",
+      "username" => @user.username,
+      "password" => @user.password,
+      "playlist" => @user.playlist,
+      "mylist" => @user.mylist
     }
     data << user_details
     File.open(userdata,"w") do |f|
       f.puts JSON.pretty_generate(data)
     end
-    puts "You're now registered! Logging you in.."
+    puts "You're now registered! Logging you in..".colorize(:light_green)
     sleep(1)
-    Menu::menu_router
+    @menu = Menu.new(@user)
+    @menu.menu_router
   end
 
   def new_user
     system("clear")
-    puts "Welcome! Please register for an account to continue."
-    prompt = TTY::Prompt.new
-    username = prompt.ask("Username >") { |u| u.validate(/\A[0-9a-zA-Z'-]*\z/, "Username must only contain letters and numbers")}
-    password = prompt.mask("Password >")
-    $user = User.new(username, password, gen_uid)
-    $user_playlist = Playlist.new($user.playlist)
+    puts "Welcome! Please register for an account to continue.".colorize(:light_green)
+    username = $prompt.ask("Username >") { |u| u.validate(/\A[0-9a-zA-Z'-]*\z/, "Username must only contain letters and numbers")}
+    password = $prompt.mask("Password >")
+    @user = User.new(username, password, gen_uid)
+    @user_playlist = Playlist.new(@user)
     store_user
   end
 
   def returning_user
     system("clear")
-    puts "Welcome back! Please login to continue."
-    prompt = TTY::Prompt.new
-    username = prompt.ask("Username >")
-    password= prompt.mask("Password >")
+    puts "Welcome back! Please login to continue.".colorize(:light_green)
+    username = $prompt.ask("Username >")
+    password= $prompt.mask("Password >")
     authenticate(username, password)
   end
 
@@ -84,16 +88,17 @@ module Login
       if hash["username"].downcase == username.downcase
         if hash["password"] == password
           auth = true
-          $user = User.new(username, password, hash["id"], hash["playlist"], hash["mylist"])
-          $user_playlist = Playlist.new($user.playlist)
-          puts "Success! Logging you in.."
+          @user = User.new(username, password, hash["id"], hash["playlist"], hash["mylist"])
+          @user_playlist = Playlist.new(@user)
+          puts "Success! Logging you in..".colorize(:light_green)
           sleep(1)
-          Menu::menu_router
+          @menu = Menu.new(@user)
+          @menu.menu_router
         end
       end
     end
     unless auth
-      puts "Incorrect username or password!"
+      puts "Incorrect username or password!".colorize(:red)
       sleep(1)
       returning_user
     end

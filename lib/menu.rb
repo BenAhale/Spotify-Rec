@@ -1,22 +1,27 @@
-module Menu
+class Menu
+
+  def initialize(user)
+    @user = user
+    @prompt = prompt = TTY::Prompt.new
+    @playlist = Playlist.new(@user)
+  end
 
   def display_menu
     system("clear")
-    prompt = TTY::Prompt.new
-    return prompt.select("》  MAIN MENU  《", (["My List", "Recommendations", "Playlist", "Account Details", "Exit"]))
+    return @prompt.select("》  MAIN MENU  《\n".colorize(:light_green), (["My List", "Recommendations", "Playlist", "Account Details", "Exit"]))
   end
 
   def my_list
     system("clear")
-    prompt = TTY::Prompt.new
-    selection = prompt.select("》  MY LIST  《", (["Display", "Add", "Remove", "Back"]))
+    selection = @prompt.select("》  MY LIST  《\n".colorize(:light_green), (["Display", "Add", "Remove", "Back"]))
+    mylist = MyList.new(@user)
     case selection
       when "Display"
-        MyList::list
+        mylist.list
       when "Add"
-        MyList::add_to_list
+        mylist.add_to_list
       when "Remove"
-        MyList::remove_from_list
+        mylist.remove_from_list
       when "Back"
         menu_router
     end
@@ -24,19 +29,18 @@ module Menu
 
   def account_details
     system("clear")
-    prompt = TTY::Prompt.new
-    selection = prompt.select("》  ACCOUNT MENU  《", (["View Details", "Change Username", "Change Password", "Delete Account", "Back"]))
+    selection = @prompt.select("》  ACCOUNT MENU  《 \n".colorize(:light_green), (["View Details", "Change Username", "Change Password", "Delete Account", "Back"]))
     case selection
       when "View Details"
-        $user.details
+        @user.details
       when "Change Username"
-        username = prompt.ask("Please enter your new username >") { |u| u.validate(/\A[0-9a-zA-Z'-]*\z/, "Username must only contain letters and numbers")}
-        $user.change_username(username)
+        username = @prompt.ask("Please enter your new username >") { |u| u.validate(/\A[0-9a-zA-Z'-]*\z/, "Username must only contain letters and numbers")}
+        @user.change_username(username)
       when "Change Password"
-        password = prompt.ask("Please enter your new password >")
-        $user.change_password(password)
+        password = @prompt.ask("Please enter your new password >")
+        @user.change_password(password)
       when "Delete Account"
-        $user.delete_account
+        @user.delete_account
       when "Back"
         menu_router
     end
@@ -49,9 +53,10 @@ module Menu
         system("clear")
         my_list
       when "Recommendations"
-        Rec::amount_of_suggestions
+        recommendation = Rec.new(@user)
+        recommendation.amount_of_suggestions
       when "Playlist"
-        UserPlaylist::menu
+        @playlist.menu
       when "Account Details"
         account_details
       when "Exit"

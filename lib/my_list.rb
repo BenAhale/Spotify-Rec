@@ -1,45 +1,49 @@
-module MyList
+class MyList
 
-  $prompt = TTY::Prompt.new
+  def initialize(user)
+    @user = user
+    @mylist = user.mylist
+    @menu = Menu.new(@user)
+  end
 
   def separator
     puts "----------------------------------------"
   end
 
   def list
-    unless $user.mylist.empty?
-      separator
-      $user.mylist.each do |hash|
+    unless @mylist.empty?
+      rows = @mylist.map do |hash|
         if hash["type"] == "track" || hash["type"] == "album"
-          puts "#{hash["name"]} by #{hash["artist"]} || #{hash["type"].capitalize}"
+          ["#{hash["name"]} by #{hash["artist"]}", hash["type"].capitalize]
         else
-          puts "#{hash["name"]} || #{hash["type"].capitalize}"
+          [hash["name"], hash["type"].capitalize]
         end
       end
-      separator
+      table = Terminal::Table.new :headings => ['Item', 'Type'], :rows => rows
+      puts table
       $prompt.keypress("Press any key to return to the previous menu..")
-      Menu::my_list
+      @menu.my_list
     else
       empty_list
     end
   end
 
   def empty_list
-    puts "Oh no! Your list is currently empty!"
-    puts "Add up to 5 items to your list. An item can be a song, artist or genre."
+    puts "Oh no! Your list is currently empty!".colorize(:light_red)
+    puts "Add up to 5 items to your list. An item can be a song, artist or genre.".colorize(:light_red)
     separator
     $prompt.keypress("Press any key to return to the previous menu..")
-    Menu::my_list
+    @menu.my_list
   end
 
   def add_to_list
-    if $user.mylist.length >= 5
-      puts "Oh no! You've reached maximum capacity in your list! You won't be able to add another item until you remove an existing one."
-      puts "You can do this by heading back to the previous menu, and selecting 'Remove'"
+    if @mylist.length >= 5
+      puts "Oh no! You've reached maximum capacity in your list! You won't be able to add another item until you remove an existing one.".colorize(:light_red)
+      puts "You can do this by heading back to the previous menu, and selecting 'Remove'".colorize(:light_red)
       $prompt.keypress("Press any key to return to the previous menu..")
-      Menu::my_list
+      @menu.my_list
     end
-    selection = $prompt.select("Which type would you like to add?", (["Song", "Artist", "Genre", "Back"]))
+    selection = $prompt.select("Which type would you like to add?".colorize(:light_green), (["Song", "Artist", "Genre", "Back"]))
     case selection
       when "Song"
         search_song
@@ -48,24 +52,24 @@ module MyList
       when "Genre"
         store_genre
       when "Back"
-      Menu::my_list
+      @menu.my_list
     end
   end
 
   def remove_from_list
-    empty_list if $user.mylist.length <= 0
-    item_names = $user.mylist.map { |item| item["name"] }
+    empty_list if @mylist.length <= 0
+    item_names = @mylist.map { |item| item["name"] }
     item_names << "Back"
-    selection = $prompt.select("Which item would you like to remove?", (item_names))
-    Menu::my_list if selection == "Back"
-    $user.mylist.each_with_index do |item, index|
-      $user.mylist.delete_at(index) if item["name"] == selection
+    selection = $prompt.select("Which item would you like to remove?".colorize(:light_green), (item_names))
+    @menu.my_list if selection == "Back"
+    @mylist.each_with_index do |item, index|
+      @mylist.delete_at(index) if item["name"] == selection
     end
     update_file
   end
 
   def search_song
-    song_query = $prompt.ask("What is the name of the song?")
+    song_query = $prompt.ask("What is the name of the song?".colorize(:light_green))
     tracks = RSpotify::Track.search(song_query, limit: 5)
     cleaned_results = []
     tracks.each { |t| cleaned_results << "#{t.name} by #{t.artists[0].name}" }
@@ -84,12 +88,12 @@ module MyList
     "id" => track.id,
     "type" => "track"
     }
-    $user.mylist << song_details
+    @mylist << song_details
     update_file
   end
 
   def search_artist
-    artist_query = $prompt.ask("What is the name of the artist?")
+    artist_query = $prompt.ask("What is the name of the artist?".colorize(:light_green))
     artists = RSpotify::Artist.search(artist_query, limit: 5)
     cleaned_results = []
     artists.each { |a| cleaned_results << "#{a.name}" }
@@ -105,29 +109,29 @@ module MyList
     "id" => artist.id,
     "type" => "artist"
     }
-    $user.mylist << artist_details
+    @mylist << artist_details
     update_file
   end
 
   def store_genre
     genres = RSpotify::Recommendations.available_genre_seeds
-    genre = $prompt.select("Which genre would you like to add to your list?", genres, filter: true)
+    genre = $prompt.select("Which genre would you like to add to your list?".colorize(:light_green), genres, filter: true)
     genre_details = {
       "name" => genre.capitalize,
       "type" => "genre"
     }
-    $user.mylist << genre_details
+    @mylist << genre_details
     update_file
   end
 
   def update_file
-    updated_data = Login.load_data.each { |user| user["mylist"] = $user.mylist if user["id"] == $user.uid.to_s }
+    updated_data = Login.load_data.each { |user| user["mylist"] = @mylist if user["id"] == @user.uid.to_s }
     File.open(userdata,"w") do |f|
       f.puts JSON.pretty_generate(updated_data)
     end
-    puts "Sweet! Your list has been updated!"
+    puts "Sweet! Your list has been updated!".colorize(:light_green)
     $prompt.keypress("Press any key to return to the previous menu..")
-    Menu::my_list
+    @menu.my_list
   end
 
 end
