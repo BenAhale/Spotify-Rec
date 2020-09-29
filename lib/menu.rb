@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Menu
   def initialize(user)
     @user = user
@@ -33,7 +35,7 @@ class Menu
     when 'View Details'
       @user.details
     when 'Change Username'
-      username = @prompt.ask('Please enter your new username >') { |u| u.validate(/\A[0-9a-zA-Z'-]*\z/, 'Username must only contain letters and numbers')}
+      username = @prompt.ask('Please enter your new username >') { |u| u.validate(/\A[0-9a-zA-Z'-]*\z/, 'Username must only contain letters and numbers') }
       @user.change_username(username)
     when 'Change Password'
       password = @prompt.ask('Please enter your new password >')

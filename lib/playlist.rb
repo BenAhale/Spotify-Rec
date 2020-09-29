@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Playlist
   attr_reader :tracks
 

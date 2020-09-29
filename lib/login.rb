@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require_relative 'menu'
 
 module Login
-  
   @prompt = prompt = TTY::Prompt.new
 
   def user

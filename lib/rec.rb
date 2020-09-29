@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Rec
   def initialize(user)
     @user_list = user.mylist

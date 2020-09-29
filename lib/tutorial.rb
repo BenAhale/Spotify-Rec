@@ -1,5 +1,6 @@
-module Tutorial
+# frozen_string_literal: true
 
+module Tutorial
   @prompt = prompt = TTY::Prompt.new
 
   def start
