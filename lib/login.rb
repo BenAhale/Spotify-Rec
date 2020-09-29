@@ -3,7 +3,7 @@
 require_relative 'menu'
 
 module Login
-  @prompt = prompt = TTY::Prompt.new
+  @prompt = TTY::Prompt.new
 
   def user
     @user
@@ -11,8 +11,7 @@ module Login
 
   def userdata
     path = File.join(File.dirname(File.dirname(File.absolute_path(__FILE__))))
-    userfile = "#{path}/public/users.json"
-    userfile
+    "#{path}/public/users.json"
   end
 
   def clear
@@ -21,9 +20,14 @@ module Login
 
   def initial_login
     clear
+    ascii_art
+    puts '》  Welcome to the Spotify Recommendations App!  《'.colorize(:light_green)
+    puts
+    @prompt.select("Are you a new or returning user? \n", %w[New Returning])
+  end
+
+  def ascii_art
     puts "               ;;;;;;;;;;;;;;;;;;;
-               ;;;;;;;;;;;;;;;;;;;
-               ;                 ;
                ;                 ;
                ;                 ;
                ;                 ;
@@ -31,11 +35,7 @@ module Login
                ;                 ;
            ,;;;;;            ,;;;;;
            ;;;;;;            ;;;;;;
-           `;;;;'            `;;;;'
-           ".colorize(:light_green)
-    puts '》  Welcome to the Spotify Recommendations App!  《'.colorize(:light_green)
-    puts
-    @prompt.select("Are you a new or returning user? \n", %w[New Returning])
+           `;;;;'            `;;;;'\n".colorize(:light_green)
   end
 
   def load_data
@@ -45,6 +45,20 @@ module Login
 
   def gen_uid
     load_data.length + 1
+  end
+
+  def go_to_menu
+    menu = Menu.new(@user)
+    menu.menu_router
+  end
+
+  def write_user(data)
+    File.open(userdata, 'w') do |f|
+      f.puts JSON.pretty_generate(data)
+    end
+    puts "You're now registered! Logging you in..".colorize(:light_green)
+    sleep(1)
+    go_to_menu
   end
 
   def store_user
@@ -57,19 +71,13 @@ module Login
       'mylist' => @user.mylist
     }
     data << user_details
-    File.open(userdata, 'w') do |f|
-      f.puts JSON.pretty_generate(data)
-    end
-    puts "You're now registered! Logging you in..".colorize(:light_green)
-    sleep(1)
-    @menu = Menu.new(@user)
-    @menu.menu_router
+    write_user(data)
   end
 
   def new_user
     system('clear')
     puts 'Welcome! Please register for an account to continue.'.colorize(:light_green)
-    username = @prompt.ask('Username >') { |u| u.validate(/\A[0-9a-zA-Z'-]*\z/, 'Username must only contain letters and numbers') }
+    username = @prompt.ask('Username >')
     password = @prompt.mask('Password >')
     @user = User.new(username, password, gen_uid)
     @user_playlist = Playlist.new(@user)
@@ -80,31 +88,34 @@ module Login
     system('clear')
     puts 'Welcome back! Please login to continue.'.colorize(:light_green)
     username = @prompt.ask('Username >')
-    password = @prompt.mask('Password >')
-    authenticate(username, password)
+    user_password = @prompt.mask('Password >')
+    puts "we get here! 1"
+    authenticate(username, user_password)
   end
 
-  def authenticate(username, password)
-    data = load_data
-    auth = false
+  def data_array(data, username, user_password)
     data.each do |hash|
+      puts "Do we get here? #{hash}"
       next unless hash['username'].downcase == username.downcase
 
-      next unless hash['password'] == password
+      next unless hash['password'] == user_password
 
-      auth = true
-      @user = User.new(username, password, hash['id'], hash['playlist'], hash['mylist'])
-      @user_playlist = Playlist.new(@user)
-      puts 'Success! Logging you in..'.colorize(:light_green)
-      sleep(1)
-      @menu = Menu.new(@user)
-      @menu.menu_router
+      @user = User.new(username, user_password, hash['id'], hash['playlist'], hash['mylist'])
+      go_to_menu
     end
-    unless auth
-      puts 'Incorrect username or password!'.colorize(:red)
-      sleep(1)
-      returning_user
-    end
+    no_auth
+  end
+
+  def no_auth
+    puts 'Incorrect username or password!'.colorize(:red)
+    returning_user
+  end
+
+  def authenticate(username, user_password)
+    puts "We get here 2"
+    data_arr = load_data
+    puts "We get here 3"
+    data_array(data_arr, username, user_password)
   end
 
   def login

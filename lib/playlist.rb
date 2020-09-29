@@ -4,15 +4,18 @@ class Playlist
   attr_reader :tracks
 
   def initialize(user)
-    @playlist = user.playlist
     @user = user
-    @prompt = prompt = TTY::Prompt.new
+    @playlist = user.playlist
+    @prompt = TTY::Prompt.new
   end
 
   def list
+    puts '》  PLAYLIST  《'
     rows = @playlist.map { |track| [track['name'], track['artist']] }
     table = Terminal::Table.new headings: %w[Track Artist], rows: rows
     puts table
+    keypress_playlist
+    menu
   end
 
   def remove
@@ -32,7 +35,7 @@ class Playlist
     puts 'You can add songs manually from the previous menu, or generate recommendations and add those!'
     separator
     @prompt.keypress('Press any key to return to the previous menu..')
-    Menu.my_list
+    menu
   end
 
   def add
@@ -70,15 +73,21 @@ class Playlist
 
   def export_to_file
     path = File.join(File.dirname(File.dirname(File.absolute_path(__FILE__))))
-    playlist_file = "#{path}/playlist.md"
-    File.open(playlist_file, 'w') do |f|
+    File.open("#{path}/playlist.md", 'w') do |f|
       f.puts("# #{@user.username}'s Playlist")
-      @playlist.each { |track| f.puts("1. #{track['name']} by #{track['artist']} || [Listen on Spotify](https://open.spotify.com/track/#{track['id']})") }
+      @playlist.each do |track|
+        link = "[Listen on Spotify](https://open.spotify.com/track/#{track['id']})"
+        f.puts("1. #{track['name']} by #{track['artist']} #{link}")
+      end
     end
-    system("cp #{playlist_file} ~/Desktop/playlist.md")
+    copy_to_desktop(path)
+  end
+
+  def copy_to_desktop(path)
+    system("cp #{path}/playlist.md ~/Desktop/playlist.md")
     puts 'Exported playlist to your Desktop!'
-    sleep(2)
-    system('clear')
+    @prompt.keypress('Press any key to return to the previous menu..')
+    menu
   end
 
   def keypress_playlist
@@ -90,24 +99,30 @@ class Playlist
     selection = @prompt.select('》  PLAYLIST  《', ['Display', 'Add', 'Remove', 'Export To File', 'Back'])
     case selection
     when 'Display'
-      puts '》  PLAYLIST  《'
       list
-      keypress_playlist
-      menu
+    else
+      case_menu(selection)
+    end
+  end
+
+  def case_menu(selection)
+    case selection
     when 'Add'
       add
-      keypress_playlist
-      menu
     when 'Remove'
       remove
-      menu
+    else
+      second_case_menu(selection)
+    end
+  end
+
+  def second_case_menu(selection)
+    case selection
     when 'Export To File'
       export_to_file
-      keypress_playlist
-      menu
     when 'Back'
-      @menu = Menu.new(@user)
-      @menu.menu_router
+      menu = Menu.new(@user)
+      menu.menu_router
     end
   end
 end

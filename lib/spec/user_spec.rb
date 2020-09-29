@@ -2,7 +2,7 @@
 
 require_relative '../user'
 require_relative '../login'
-include Login
+require Login
 require 'json'
 
 describe 'User' do

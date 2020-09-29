@@ -5,7 +5,7 @@ class MyList
     @user = user
     @mylist = user.mylist
     @menu = Menu.new(@user)
-    @prompt = prompt = TTY::Prompt.new
+    @prompt = TTY::Prompt.new
   end
 
   def separator
@@ -13,21 +13,22 @@ class MyList
   end
 
   def list
-    if @mylist.empty?
-      empty_list
-    else
-      rows = @mylist.map do |hash|
-        if hash['type'] == 'track' || hash['type'] == 'album'
-          ["#{hash['name']} by #{hash['artist']}", hash['type'].capitalize]
-        else
-          [hash['name'], hash['type'].capitalize]
-        end
+    empty_list if @mylist.empty?
+    list_table
+    @prompt.keypress('Press any key to return to the previous menu..')
+    @menu.my_list
+  end
+
+  def list_table
+    rows = @mylist.map do |hash|
+      if hash['type'] == 'track' || hash['type'] == 'album'
+        ["#{hash['name']} by #{hash['artist']}", hash['type'].capitalize]
+      else
+        [hash['name'], hash['type'].capitalize]
       end
-      table = Terminal::Table.new headings: %w[Item Type], rows: rows
-      puts table
-      @prompt.keypress('Press any key to return to the previous menu..')
-      @menu.my_list
     end
+    table = Terminal::Table.new headings: %w[Item Type], rows: rows
+    puts table
   end
 
   def empty_list
@@ -38,14 +39,7 @@ class MyList
     @menu.my_list
   end
 
-  def add_to_list
-    if @mylist.length >= 5
-      puts "Oh no! You've reached maximum capacity in your list! You won't be able to add another item until you remove an existing one.".colorize(:light_red)
-      puts "You can do this by heading back to the previous menu, and selecting 'Remove'".colorize(:light_red)
-      @prompt.keypress('Press any key to return to the previous menu..')
-      @menu.my_list
-    end
-    selection = @prompt.select('Which type would you like to add?'.colorize(:light_green), %w[Song Artist Genre Back])
+  def case_add_to_list(selection)
     case selection
     when 'Song'
       search_song
@@ -56,6 +50,20 @@ class MyList
     when 'Back'
       @menu.my_list
     end
+  end
+
+  def add_to_list
+    list_too_long if @mylist.length >= 5
+    selection = @prompt.select('Which type would you like to add?'.colorize(:light_green), %w[Song Artist Genre Back])
+    case_add_to_list(selection)
+  end
+
+  def list_too_long
+    puts "Oh no! You've reached maximum capacity in your list! You won't be able to add".colorize(:light_red)
+    puts 'another item until you remove an existing one.'.colorize(:light_red)
+    puts "You can do this by heading back to the previous menu, and selecting 'Remove'".colorize(:light_red)
+    @prompt.keypress('Press any key to return to the previous menu..')
+    @menu.my_list
   end
 
   def remove_from_list
@@ -117,7 +125,7 @@ class MyList
 
   def store_genre
     genres = RSpotify::Recommendations.available_genre_seeds
-    genre = @prompt.select('Which genre would you like to add to your list?'.colorize(:light_green), genres, filter: true)
+    genre = @prompt.select('Which genre would you like to add to your list?', genres, filter: true)
     genre_details = {
       'name' => genre.capitalize,
       'type' => 'genre'

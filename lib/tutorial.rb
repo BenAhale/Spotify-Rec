@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-# Contains methods to display tutorial screens
 
+# Contains methods to display tutorial screens
 module Tutorial
   @prompt = TTY::Prompt.new
 
