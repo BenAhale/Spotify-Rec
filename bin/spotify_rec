@@ -31,7 +31,7 @@ ARGV << '--run' if ARGV.empty?
 
 options = {}
 parser = OptionParser.new do |opts|
-  opts.banner = 'Welcome to Spotify Recommendations! Usage: spotifyrec [options]'.colorize(:light_green)
+  opts.banner = 'Welcome to Spotify Recommendations! Usage: spotify_rec [options]'.colorize(:light_green)
 
   opts.on('-v', '--version', 'Display the version') do
     puts "Spotify Recommendations version #{VERSION}".colorize(:light_green)
