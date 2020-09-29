@@ -8,15 +8,16 @@ class MyList
     @prompt = TTY::Prompt.new
   end
 
-  def separator
-    puts '----------------------------------------'
-  end
+  # Display MyList
 
   def list
-    empty_list if @mylist.empty?
+    raise MyListEmpty.new, 'List must not be empty' if @mylist.empty?
+
     list_table
     @prompt.keypress('Press any key to return to the previous menu..')
     @menu.my_list
+  rescue MyListEmpty
+    empty_list
   end
 
   def list_table
@@ -34,23 +35,12 @@ class MyList
   def empty_list
     puts 'Oh no! Your list is currently empty!'.colorize(:light_red)
     puts 'Add up to 5 items to your list. An item can be a song, artist or genre.'.colorize(:light_red)
-    separator
+    puts
     @prompt.keypress('Press any key to return to the previous menu..')
     @menu.my_list
   end
 
-  def case_add_to_list(selection)
-    case selection
-    when 'Song'
-      search_song
-    when 'Artist'
-      search_artist
-    when 'Genre'
-      store_genre
-    when 'Back'
-      @menu.my_list
-    end
-  end
+  # Add to MyList
 
   def add_to_list
     list_too_long if @mylist.length >= 5
@@ -66,16 +56,17 @@ class MyList
     @menu.my_list
   end
 
-  def remove_from_list
-    empty_list if @mylist.length <= 0
-    item_names = @mylist.map { |item| item['name'] }
-    item_names << 'Back'
-    selection = @prompt.select('Which item would you like to remove?'.colorize(:light_green), item_names)
-    @menu.my_list if selection == 'Back'
-    @mylist.each_with_index do |item, index|
-      @mylist.delete_at(index) if item['name'] == selection
+  def case_add_to_list(selection)
+    case selection
+    when 'Song'
+      search_song
+    when 'Artist'
+      search_artist
+    when 'Genre'
+      store_genre
+    when 'Back'
+      @menu.my_list
     end
-    update_file
   end
 
   def search_song
@@ -133,6 +124,22 @@ class MyList
     @mylist << genre_details
     update_file
   end
+
+  # Remove From MyList
+
+  def remove_from_list
+    empty_list if @mylist.length <= 0
+    item_names = @mylist.map { |item| item['name'] }
+    item_names << 'Back'
+    selection = @prompt.select('Which item would you like to remove?'.colorize(:light_green), item_names)
+    @menu.my_list if selection == 'Back'
+    @mylist.each_with_index do |item, index|
+      @mylist.delete_at(index) if item['name'] == selection
+    end
+    update_file
+  end
+
+  # Update userfile
 
   def update_file
     updated_data = Login.load_data.each { |user| user['mylist'] = @mylist if user['id'] == @user.uid.to_s }

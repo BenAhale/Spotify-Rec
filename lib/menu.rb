@@ -13,6 +13,30 @@ class Menu
     @prompt.select("》  MAIN MENU  《\n".colorize(:light_green), arr)
   end
 
+  def menu_router
+    selection = display_menu
+    case selection
+    when 'My List'
+      my_list
+    when 'Recommendations'
+      recommendation = Rec.new(@user)
+      recommendation.amount_of_suggestions
+    else
+      case_menu(selection)
+    end
+  end
+
+  def case_menu(selection)
+    case selection
+    when 'Playlist'
+      @playlist.menu
+    when 'Account Details'
+      account_details
+    when 'Exit'
+      exit
+    end
+  end
+
   def my_list
     system('clear')
     selection = @prompt.select("》  MY LIST  《\n".colorize(:light_green), %w[Display Add Remove Back])
@@ -33,14 +57,14 @@ class Menu
     end
   end
 
-  def account_details_selection
-    system("clear")
-    arr = ["View Details", "Change Username", "Change Password", "Delete Account", "Back"]
-    @prompt.select("》  ACCOUNT DETAILS  《\n".colorize(:light_green), arr)
+  def account_details_select
+    system('clear')
+    arr = ['View Details', 'Change Username', 'Change Password', 'Delete Account', 'Back']
+    @prompt.select('》  ACCOUNT DETAILS  《\n'.colorize(:light_green), arr)
   end
 
   def account_details
-    selection = account_details_selection
+    selection = account_details_select
     case selection
     when 'View Details'
       @user.details
@@ -48,11 +72,11 @@ class Menu
       username = @prompt.ask('Please enter your new username >')
       @user.change_username(username)
     else
-      second_details(selection)
+      case_account_details(selection)
     end
   end
 
-  def second_details(selection)
+  def case_account_details(selection)
     case selection
     when 'Change Password'
       password = @prompt.ask('Please enter your new password >')
@@ -61,34 +85,6 @@ class Menu
       @user.delete_account
     when 'Back'
       menu_router
-    end
-  end
-
-  def second_menu(selection)
-    case selection
-    when 'Playlist'
-      @playlist.menu
-    when 'Account Details'
-      account_details
-    when 'Exit'
-      exit
-    else
-      puts "End of second menu"
-    end
-  end
-
-  def menu_router
-    puts "Do we get here? Menu"
-    selection = display_menu
-    selection_two = selection
-    case selection
-    when 'My List'
-      my_list
-    when 'Recommendations'
-      recommendation = Rec.new(@user)
-      recommendation.amount_of_suggestions
-    else
-      second_menu(selection_two)
     end
   end
 end
