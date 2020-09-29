@@ -15,9 +15,11 @@ require_relative '../lib/login'
 require_relative '../lib/rec'
 require_relative '../lib/menu'
 require_relative '../lib/my_list'
+require_relative '../lib/tutorial'
 
 #modules
 include Login
+include Tutorial
 
 RSpotify.authenticate("712ff89a218a4e6dbe1f169e06f949b9", "e9e0517f405b4a01a1be8823126459b7")
 $prompt = TTY::Prompt.new
@@ -37,6 +39,10 @@ parser = OptionParser.new do |opts|
     opts.on("-h", "--help", "Display the help message") do
         puts opts
         exit
+    end
+
+    opts.on("-t", "--tutorial", "View a brief tutorial") do
+        Tutorial::start
     end
 
     opts.on("-qGENRE", "--quick=GENRE", "Generate a quick recommendation with the chosen genre") do |genre|
