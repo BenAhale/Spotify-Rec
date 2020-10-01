@@ -14,17 +14,18 @@ class User
     @prompt = TTY::Prompt.new
   end
 
+  # Prints user details
   def details
     puts "Username: #{@username.colorize(:light_green)}"
     puts "Password: #{@password.colorize(:light_green)}"
     puts "User ID: #{@uid.to_s.colorize(:light_green)}"
     @prompt.keypress('Press any key to continue..')
-    menu = Menu.new(Login.user)
+    menu = Menu.new(self)
     menu.account_details
   end
 
   # Change Username section
-
+  # Changes user name and routes back to menu
   def change_username(new_name)
     update_username(new_name)
     @username = new_name
@@ -34,6 +35,7 @@ class User
     menu.account_details
   end
 
+  # Updates username in file
   def update_username(new_name)
     updated_data = Login.load_data.each do |user|
       user['username'] = new_name if user['id'] == @uid.to_s
@@ -44,16 +46,17 @@ class User
   end
 
   # Change password section
-
+  # Changes user name and routes back to menu
   def change_password(new_password)
     update_password(new_password)
     @password = new_password
     puts 'Success! Your password has been changed.'.colorize(:light_green)
     @prompt.keypress('Press any key to continue..')
-    menu = Menu.new(Login.user)
+    menu = Menu.new(self)
     menu.account_details
   end
 
+  # Updates user password in file
   def update_password(new_password)
     updated_data = Login.load_data.each do |user|
       user['password'] = new_password if user['id'] == Login.user.uid.to_s
@@ -64,7 +67,7 @@ class User
   end
 
   # Delete account section
-
+  #Prompts user to confirm they would like to delete account.
   def delete_account
     puts 'Woah there! Deleting your account is serious business, and cannot be undone.'.colorize(:light_red)
     selection = @prompt.yes?('Are you sure you want to delete your account?'.colorize(:light_red))
@@ -76,6 +79,7 @@ class User
     end
   end
 
+  # Deletes user data from the userfile
   def delete_from_file
     updated_data = []
     Login.load_data.each { |user| updated_data << user unless user['id'] == Login.user.uid.to_s }

@@ -10,7 +10,7 @@ class Playlist
   end
 
   # Playlist Menu Section
-
+  # Prompts user to select an item from the menu
   def menu
     system('clear')
     selection = @prompt.select('》  PLAYLIST  《', ['Display', 'Add', 'Remove', 'Export To File', 'Back'])
@@ -22,6 +22,7 @@ class Playlist
     end
   end
 
+  # Cases the user selection and routes the user
   def case_menu(selection)
     case selection
     when 'Add'
@@ -33,6 +34,7 @@ class Playlist
     end
   end
 
+  # Continues to case the selection and route the user
   def second_case_menu(selection)
     case selection
     when 'Export To File'
@@ -44,7 +46,7 @@ class Playlist
   end
 
   # View Playlist
-
+  # Generates table from user playlist and prints it to the screen
   def list
     puts '》  PLAYLIST  《'
     empty if @playlist.empty?
@@ -55,6 +57,7 @@ class Playlist
     menu
   end
 
+  # Tells user if their playlist is empty and sends them back to the menu
   def empty
     puts 'Oh no! Your playlist is currently empty!'
     puts 'You can add songs manually from the previous menu, or generate recommendations and add those!'
@@ -64,7 +67,7 @@ class Playlist
   end
 
   # Add to Playlist
-
+  # Prompts user to enter song name, searches for song and prompts user to select a result
   def add
     song_query = @prompt.ask('What is the name of the song?')
     tracks = RSpotify::Track.search(song_query, limit: 5)
@@ -77,6 +80,7 @@ class Playlist
     store(selection)
   end
 
+  # Turns song details into a hash and adds to playlist array
   def store(details)
     track = RSpotify::Track.search("#{details[0]} #{details[1]}", limit: 1).first
     song_details = {
@@ -89,7 +93,7 @@ class Playlist
   end
 
   # Remove from Playlist
-
+  # Prompts user to select item in playlist to remove and deleted from playlist array
   def remove
     empty if @playlist.length <= 0
     item_names = @playlist.map { |item| "#{item['name']} by #{item['artist']}" }
@@ -103,7 +107,7 @@ class Playlist
   end
 
   # Update Playlist in file
-
+  # Loads userdata and updates playlist in file. Returns the user to the menu
   def update_playlist
     updated_data = Login.load_data.each { |user| user['playlist'] = @playlist if user['id'] == @user.uid.to_s }
     File.open(Login.userdata, 'w') do |f|
@@ -115,7 +119,7 @@ class Playlist
   end
 
   # Export playlist to file
-
+  # Writes user playlist information to a markdown file
   def export_to_file
     path = File.join(File.dirname(File.dirname(File.absolute_path(__FILE__))))
     File.open("#{path}/playlist.md", 'w') do |f|
@@ -128,6 +132,7 @@ class Playlist
     copy_to_desktop(path)
   end
 
+  # Copies markdown file to desktop for easy access
   def copy_to_desktop(path)
     system("cp #{path}/playlist.md ~/Desktop/playlist.md")
     puts 'Exported playlist to your Desktop!'

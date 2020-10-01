@@ -10,6 +10,7 @@ class Rec
     @prompt = TTY::Prompt.new
   end
 
+  # Prompts user to choose how many suggestions to generate
   def amount_of_suggestions
     system('clear')
     puts '》  RECOMMENDATIONS  《'
@@ -20,6 +21,7 @@ class Rec
     recommend(amount.to_i)
   end
 
+  # Prompts user to select which recommendations to add to their playlist
   def recommend(num)
     system('clear')
     recommendations = recommendations_generate(num)
@@ -30,6 +32,7 @@ class Rec
     clean_recommendations(selections)
   end
 
+  # Sorts list items into arrays to be used in generating recommendations
   def sort_my_list
     @tracks.clear
     @artists.clear
@@ -41,11 +44,13 @@ class Rec
     end
   end
 
+  # Generates recommendations with RSpotify
   def recommendations_generate(num)
     sort_my_list
     RSpotify::Recommendations.generate(limit: num, seed_artists: @artists, seed_genres: @genres, seed_tracks: @tracks)
   end
 
+  # Searches again for song selections to get the track object rather than just the name and artist
   def clean_recommendations(selections)
     selections.each do |track|
       details = track.split(' by ')
@@ -55,6 +60,7 @@ class Rec
     update_file
   end
 
+  # Pulls song details from track and stores in a hash. Pushes to user playlist array
   def song_details(song)
     song_details = {
       'name' => song.name,
@@ -64,6 +70,7 @@ class Rec
     @user.playlist << song_details
   end
 
+  # Updates file with current user playlist
   def update_file
     updated_data = Login.load_data.each { |user| user['playlist'] = @user.playlist if user['id'] == @user.uid.to_s }
     File.open(userdata, 'w') do |f|

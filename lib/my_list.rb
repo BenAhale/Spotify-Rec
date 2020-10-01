@@ -9,7 +9,7 @@ class MyList
   end
 
   # Display MyList
-
+  # Displays items in MyList. Raises error if no items in list
   def list
     raise MyListEmpty.new, 'List must not be empty' if @mylist.empty?
 
@@ -20,6 +20,7 @@ class MyList
     empty_list
   end
 
+  # Generates the list in table view and prints it to the screen
   def list_table
     rows = @mylist.map do |hash|
       if hash['type'] == 'track' || hash['type'] == 'album'
@@ -32,6 +33,7 @@ class MyList
     puts table
   end
 
+  # Tells the user they have no items in their list, and returns to menu
   def empty_list
     puts 'Oh no! Your list is currently empty!'.colorize(:light_red)
     puts 'Add up to 5 items to your list. An item can be a song, artist or genre.'.colorize(:light_red)
@@ -41,13 +43,14 @@ class MyList
   end
 
   # Add to MyList
-
+  # Prompts the user to specify what type of item to add
   def add_to_list
     list_too_long if @mylist.length >= 5
     selection = @prompt.select('Which type would you like to add?'.colorize(:light_green), %w[Song Artist Genre Back])
     case_add_to_list(selection)
   end
 
+  # Returns user to menu if the MyList has too many items
   def list_too_long
     puts "Oh no! You've reached maximum capacity in your list! You won't be able to add".colorize(:light_red)
     puts 'another item until you remove an existing one.'.colorize(:light_red)
@@ -56,6 +59,7 @@ class MyList
     @menu.my_list
   end
 
+  # Cases the add to list selection and routes the user
   def case_add_to_list(selection)
     case selection
     when 'Song'
@@ -69,6 +73,7 @@ class MyList
     end
   end
 
+  # Prompts user for song name and searches spotify. Prompts user to select a result
   def search_song
     song_query = @prompt.ask('What is the name of the song?'.colorize(:light_green))
     tracks = RSpotify::Track.search(song_query, limit: 5)
@@ -80,7 +85,8 @@ class MyList
     add_to_list if selection[0] == 'Back'
     store_song(selection)
   end
-
+  
+  # Stores the song in a hash ready to be written to the file
   def store_song(details)
     track = RSpotify::Track.search("#{details[0]} #{details[1]}", limit: 1).first
     song_details = {
@@ -93,6 +99,7 @@ class MyList
     update_file
   end
 
+  # Prompts user for artist name, searches for the artist and prompts user to select a result
   def search_artist
     artist_query = @prompt.ask('What is the name of the artist?'.colorize(:light_green))
     artists = RSpotify::Artist.search(artist_query, limit: 5)
@@ -103,6 +110,7 @@ class MyList
     store_artist(selection)
   end
 
+  # Stores the artist details in a hash, ready to be written to userfile
   def store_artist(details)
     artist = RSpotify::Artist.search(details.to_s, limit: 1).first
     artist_details = {
@@ -114,6 +122,7 @@ class MyList
     update_file
   end
 
+  # Prompts user to select genre from the list. Stores details in hash to be written to file
   def store_genre
     genres = RSpotify::Recommendations.available_genre_seeds
     genre = @prompt.select('Which genre would you like to add to your list?', genres, filter: true)
@@ -126,7 +135,7 @@ class MyList
   end
 
   # Remove From MyList
-
+  # Prompts user to select item to remove from MyList. Removes item from mylist array
   def remove_from_list
     empty_list if @mylist.length <= 0
     item_names = @mylist.map { |item| item['name'] }
@@ -140,7 +149,7 @@ class MyList
   end
 
   # Update userfile
-
+  # Writes the user MyList to the userfile
   def update_file
     updated_data = Login.load_data.each { |user| user['mylist'] = @mylist if user['id'] == @user.uid.to_s }
     File.open(userdata, 'w') do |f|

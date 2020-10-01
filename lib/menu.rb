@@ -8,12 +8,14 @@ class Menu
     @list_length = @user.mylist.length
   end
 
+  # Prompts the user to select an item on the menu
   def display_menu
     system('clear')
     arr = ['My List', 'Recommendations', 'Playlist', 'Account Details', 'Exit']
     @prompt.select("》  MAIN MENU  《\n".colorize(:light_green), arr)
   end
 
+  # Begins to case the user selection from the menu
   def menu_router
     selection = display_menu
     case selection
@@ -26,6 +28,7 @@ class Menu
     end
   end
 
+  # Opens the recommendations menu
   def recommendations_menu
     if @list_length.positive?
       recommendation = Rec.new(@user)
@@ -35,6 +38,7 @@ class Menu
     end
   end
 
+  # Sends user back to menu if they don't have any items in 'MyList' yet
   def no_items
     puts "Uh oh! You don't have any items in your list yet, so we can't generate any".colorize(:light_red)
     puts 'recommendations. Please add some before doing this!'.colorize(:light_red)
@@ -42,6 +46,7 @@ class Menu
     display_menu
   end
 
+  # Continues to case the menu selection and route the user
   def case_menu(selection)
     case selection
     when 'Playlist'
@@ -53,6 +58,7 @@ class Menu
     end
   end
 
+  # Shows the MyList menu
   def my_list
     system('clear')
     selection = @prompt.select("》  MY LIST  《\n".colorize(:light_green), %w[Display Add Remove Back])
@@ -60,6 +66,7 @@ class Menu
     case_my_list(selection, mylist)
   end
 
+  # Cases the selection from the MyList menu and routes to the required method
   def case_my_list(selection, mylist)
     case selection
     when 'Display'
@@ -73,12 +80,14 @@ class Menu
     end
   end
 
+  # Prompts the user to select from the Account details menu
   def account_details_select
     system('clear')
     arr = ['View Details', 'Change Username', 'Change Password', 'Delete Account', 'Back']
     @prompt.select('》  ACCOUNT DETAILS  《\n'.colorize(:light_green), arr)
   end
 
+  # Cases the account details menu and routes the user
   def account_details
     selection = account_details_select
     case selection
@@ -92,6 +101,7 @@ class Menu
     end
   end
 
+  # Continues to case the account details menu and route the user
   def case_account_details(selection)
     case selection
     when 'Change Password'

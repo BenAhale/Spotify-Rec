@@ -7,22 +7,20 @@ module Login
   @count = 0
 
   # Login Logic Section
+  # Prompts the user to indicate whether they are a new or returning user
   def initial_login
     clear
     ascii_art
     puts '》  Welcome to the Spotify Recommendations App!  《'.colorize(:light_green)
     puts
-    @prompt.select("Are you a new or returning user? \n", %w[New Returning])
-  end
-
-  def login
-    new_returning = initial_login.downcase
-    new_user if new_returning == 'new'
-    returning_user if new_returning == 'returning'
+    selection = @prompt.select("Are you a new or returning user? \n", %w[New Returning])
+    new_user if selection == 'New'
+    returning_user if selection == 'Returning'
   end
 
   # New user
-
+  # Prompts user to enter username for new account. Checks name for any special characters.
+  # Raises error if special character is included, and prompts the user again.
   def new_user
     system('clear')
     File.open(userdata, 'w') { |f| f.write([].to_json) } unless File.exist?(userdata)
@@ -36,6 +34,7 @@ module Login
     new_user
   end
 
+  # Prompts for new password. Validates password so no special characters are included.
   def new_user_password(username)
     password = @prompt.mask('Password >')
     raise RequirementError.new, 'Requirements not met' if password.match?(/[!@#$%^&*(),.?":{}|<>]/)
@@ -47,6 +46,7 @@ module Login
     puts 'Password cannot contain special characters. Please try again!'.colorize(:light_red)
   end
 
+  # Converts user details into a hash, ready to be stored in JSON file
   def store_user
     data = load_data
     user_details = {
@@ -60,6 +60,7 @@ module Login
     write_user(data)
   end
 
+  # Writes the hash of user data to the JSON file
   def write_user(data)
     File.open(userdata, 'w') do |f|
       f.puts JSON.pretty_generate(data)
@@ -70,7 +71,7 @@ module Login
   end
 
   # Returning user
-
+  # Prompts user to enter username and password
   def returning_user
     system('clear')
     File.open(userdata, 'w') { |f| f.write([].to_json) } unless File.exist?(userdata)
@@ -80,11 +81,13 @@ module Login
     authenticate(username, user_password)
   end
 
+  # Loads data from JSON file
   def authenticate(username, user_password)
     data_arr = load_data
     user_data(data_arr, username, user_password)
   end
 
+  # Checks whether supplied username and password match any in the userfile
   def user_data(data, username, user_password)
     data.each do |hash|
       next unless hash['username'].downcase == username.downcase
@@ -98,6 +101,7 @@ module Login
     no_auth
   end
 
+  # Method exits application if user is unsuccessful 3 times or more. Otherwise returns to login
   def no_auth
     puts 'Incorrect username or password!'.colorize(:red)
     sleep(1)
@@ -109,7 +113,6 @@ module Login
   end
 
   # Helper Module Methods
-
   def user
     @user
   end

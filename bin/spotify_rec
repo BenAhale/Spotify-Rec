@@ -54,7 +54,7 @@ parser = OptionParser.new do |opts|
   end
 
   opts.on('-r', '--run', 'Run the application') do
-    Login.login
+    Login.initial_login
   end
 end
 
