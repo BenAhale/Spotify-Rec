@@ -28,15 +28,15 @@ class User
   def change_username(new_name)
     update_username(new_name)
     @username = new_name
-    puts "Success! Your new username is #{Login.user.username}".colorize(:light_green)
+    puts "Success! Your new username is #{@username}".colorize(:light_green)
     @prompt.keypress('Press any key to continue..')
-    menu = Menu.new(Login.user)
+    menu = Menu.new(self)
     menu.account_details
   end
 
   def update_username(new_name)
     updated_data = Login.load_data.each do |user|
-      user['username'] = new_name if user['id'] == Login.user.uid.to_s
+      user['username'] = new_name if user['id'] == @uid.to_s
     end
     File.open(Login.userdata, 'w') do |f|
       f.puts JSON.pretty_generate(updated_data)

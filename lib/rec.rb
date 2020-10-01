@@ -12,21 +12,12 @@ class Rec
 
   def amount_of_suggestions
     system('clear')
-    too_many_items if @user_list.length > 5
     puts '》  RECOMMENDATIONS  《'
     amount = @prompt.ask('How many recommendations would you like to generate?'.colorize(:light_green)) do |q|
       q.in '1-10'
       q.messages[:range?] = 'Number must be between 1 and 10'
     end
     recommend(amount.to_i)
-  end
-
-  def too_many_items
-    puts "Uh oh! You don't have any items in your list yet, so we can't generate any".colorize(:light_red)
-    puts 'recommendations. Please add some before doing this!'.colorize(:light_red)
-    @prompt.keypress('Press any key to return to the previous menu..')
-    menu = Menu.new(@user)
-    menu.display_menu
   end
 
   def recommend(num)

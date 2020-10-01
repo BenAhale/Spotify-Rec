@@ -5,6 +5,7 @@ class Menu
     @user = user
     @prompt = TTY::Prompt.new
     @playlist = Playlist.new(@user)
+    @list_length = @user.mylist.length
   end
 
   def display_menu
@@ -19,11 +20,26 @@ class Menu
     when 'My List'
       my_list
     when 'Recommendations'
-      recommendation = Rec.new(@user)
-      recommendation.amount_of_suggestions
+      recommendations_menu
     else
       case_menu(selection)
     end
+  end
+
+  def recommendations_menu
+    if @list_length.positive?
+      recommendation = Rec.new(@user)
+      recommendation.amount_of_suggestions
+    else
+      no_items
+    end
+  end
+
+  def no_items
+    puts "Uh oh! You don't have any items in your list yet, so we can't generate any".colorize(:light_red)
+    puts 'recommendations. Please add some before doing this!'.colorize(:light_red)
+    @prompt.keypress('Press any key to return to the previous menu..')
+    display_menu
   end
 
   def case_menu(selection)
