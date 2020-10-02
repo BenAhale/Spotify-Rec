@@ -6,7 +6,7 @@ https://github.com/BenAhale/Spotify-App
 ## Installation and Setup
 
 1. Install ruby, we recommend using [asdf](https://asdf-vm.com/) to do this.
-1. Install the Ruby Gem
+1. Install the Ruby Gem. You can view the Ruby Gems page for this gem [here](https://rubygems.org/gems/spotify_rec).
     ```gem install spotify_rec```
 1. This should download the following gem dependencies:
     - RSpotify
