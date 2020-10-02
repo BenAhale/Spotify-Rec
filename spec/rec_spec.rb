@@ -1,5 +1,5 @@
 require 'rspotify'
-require_relative '../user'
+require_relative '../lib/user'
 
 RSpotify.authenticate('712ff89a218a4e6dbe1f169e06f949b9', 'e9e0517f405b4a01a1be8823126459b7')
 

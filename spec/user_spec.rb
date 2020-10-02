@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../user'
+require_relative '../lib/user'
 require 'json'
 require 'tty-prompt'
 
