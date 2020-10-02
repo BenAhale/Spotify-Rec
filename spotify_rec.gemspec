@@ -2,8 +2,8 @@
 
 Gem::Specification.new do |s|
   s.name = 'spotify_rec'
-  s.version = '1.10'
-  s.date = '2020-10-01'
+  s.version = '2.0'
+  s.date = '2020-10-02'
   s.summary = 'Spotify Rec generates track recommendations based upon a user defined list of items'
   s.files = [
     'lib/login.rb',
@@ -14,8 +14,6 @@ Gem::Specification.new do |s|
     'lib/user.rb',
     'lib/tutorial.rb',
     'lib/error.rb',
-    'lib/spec/rec_spec.rb',
-    'lib/spec/user_spec.rb',
     'public/users.json'
   ]
   s.require_paths = %w[lib public]
